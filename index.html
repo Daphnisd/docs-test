@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Markdown documentation proof-of-concept using GitHub Pages, adapted from https://github.com/dandalpiaz/markdown-pages">
+
+  <title>Docs test</title>
+
+  <!-- favicon, originally frtom https://www.iconsdb.com/gray-icons/book-16-icon.html -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=1">
+
+  <!-- pre-connect to CDNs, also with crossorigin -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+
+  <!-- convert Markdown to HTML using https://showdownjs.com/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js" integrity="sha512-LhccdVNGe2QMEfI3x4DVV3ckMRe36TfydKss6mJpdHjNFiV07dFpS2xzeZedptKZrwxfICJpez09iNioiSZ3hA==" crossorigin="anonymous"></script>
+  <!-- syntax highlighting for code blocks using https://highlightjs.org/ -->
+  <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js" integrity="sha512-gU7kztaQEl7SHJyraPfZLQCNnrKdaQi5ndOyt4L4UPL/FHDd/uB9Je6KDARIqwnNNE27hnqoWLBq+Kpe4iHfeQ==" crossorigin="anonymous"></script>
+  <!-- basic styles for page using https://picocss.com/ -->
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css" integrity="sha512-2MD814AVKlRmLMNeIKnmSSJEaI1gFz742oiIWCkRDZ3ZoN8lALOPN71gCCya8WItuZNfrulKl5jnLOVIhtGY+A==" crossorigin="anonymous">
+
+  <!-- page styles from https://github.com/dandalpiaz/markdown-pages July 20th 2022 -->
+  <style>
+    /* adjust contain widths */
+    @media (max-width: 1199px) {
+      .container {
+        max-width: 100%;
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+
+    /* increase code color contrast for a11y */
+    code {
+      color: rgb(135, 150, 160);
+    }
+
+    [data-theme="light"] code {
+      color: rgb(100, 125, 135);
+    }
+
+    /* keep link color for code links */
+    a code {
+      color: var(--code-tag-color) !important;
+      font-size: 0.8rem;
+      vertical-align: middle;
+    }
+
+    /* adjust heading margins */
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    /* dark/light mode toggle button */
+    #light-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* adjust syntax highlighting background */
+    [data-theme="dark"] .hljs {
+      background: rgb(24, 35, 44);
+    }
+
+  </style>
+</head>
+
+<body>
+  <main role="main" class="container">
+    <!-- toggle between dark & light mode -->
+    <a href="#" role="button" onclick="toggleLight();return false;" id="light-toggle" class="contrast">🌗 Light</a>
+    <!-- Markdown will be converted to HTML and inserted here -->
+    <div id="insert"></div>
+  </main>
+
+  <!-- script from https://github.com/dandalpiaz/markdown-pages, July 20th 2022 -->
+  <script type="text/javascript">
+
+  // set syntax highlighting theme based on light or dark mode
+  function setHighlightTheme(mode) {
+    var head = document.getElementsByTagName('HEAD')[0];
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    if (mode == "light") {
+      link.href = 'https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/atom-one-light.min.css';
+    }
+    if (mode == "dark") {
+      link.href = 'https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/monokai-sublime.min.css';
+    }
+    head.appendChild(link);
+  }
+
+  // toggle between light and dark mode
+  function toggleLight() {
+    var mode = localStorage.getItem("mode");
+    if (mode == "light") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.getElementById('light-toggle').innerHTML = "🌗 Light";
+        localStorage.setItem("mode", "dark");
+      setHighlightTheme("dark");
+    }
+    if (mode == "dark" || mode == null) {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.getElementById('light-toggle').innerHTML = "🌗 Dark";
+      localStorage.setItem("mode", "light");
+      setHighlightTheme("light");
+    }
+  }
+
+  // helper function to grab query string value
+  function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+  // build URL for markdown file
+  var page = getParameterByName('page');
+  if (page) {
+    page = "pages/" + page + ".md"
+  } else {
+    page = "README.md";
+  }
+
+  // request markdown file
+  var client = new XMLHttpRequest();
+  client.open('GET', page);
+  client.onreadystatechange = function() {
+    if (client.readyState == 4 && client.status == 200) {
+      if (client.responseText) {
+        var div = document.getElementById('insert');
+        div.innerHTML += client.responseText;
+        var conv = new showdown.Converter();
+        conv.setOption('tables', 'true');
+        conv.setOption('emoji', 'true');
+        conv.setOption('ghCompatibleHeaderId', 'true');
+        conv.setOption('simpleLineBreaks', 'true');
+
+        // convert markdown to HTML
+        document.getElementById('insert').innerHTML = conv.makeHtml(div.textContent);
+
+        // set title as first h1 plus site title
+        var h1s = document.getElementsByTagName("h1");
+        for (var i = 0; i < h1s.length; i++) {
+            var h1 = h1s[i];
+            document.title = h1.innerText + " | " + document.title;
+        }
+
+        // apply syntax highlighting for code blocks
+        hljs.highlightAll();
+      }
+    }
+  }
+  client.send();
+
+  // get current light/dark mode on page load
+  (function () {
+    var mode = localStorage.getItem("mode");
+    if (mode == "light") {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.getElementById('light-toggle').innerHTML = "🌗 Dark";
+      setHighlightTheme("light");
+    } else {
+      setHighlightTheme("dark");
+    }
+  })();
+
+  </script>
+</body>
+</html>
