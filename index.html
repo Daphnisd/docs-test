@@ -8,7 +8,7 @@
 
   <title>Docs test</title>
 
-  <!-- favicon, originally frtom https://www.iconsdb.com/gray-icons/book-16-icon.html -->
+  <!-- favicon, originally from https://www.iconsdb.com/gray-icons/book-16-icon.html -->
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=1">
 
   <!-- pre-connect to CDNs, also with crossorigin -->
@@ -139,7 +139,8 @@
   if (page) {
     page = "pages/" + page + ".md"
   } else {
-    page = "README.md";
+    // if no page specified, load "readme.md" (case sensitive)
+    page = "readme.md";
   }
 
   // request markdown file
