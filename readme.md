@@ -5,4 +5,4 @@ This is a test of Markdown-to-HTML using [https://showdownjs.com](https://showdo
 Link to a separate [test page](?page=test).
 
 <!-- link to edit (GitHub login and permission required) -->
-[`Edit this page`](https://github.com/thomas-ccamlr/docs-test/edit/main/readme.md)
+[`Edit this page on GitHub`](https://github.com/thomas-ccamlr/docs-test/edit/main/readme.md)
